@@ -984,4 +984,35 @@ Explicación del paso:
 - `Math.max(0, actuales - 1)`: Le resta 1 al cupo actual y con `Math.max(0, ...)` evitas que los cupos lleguen a números negativos si se presiona varias veces.
 
 Al aplicar esta corrección dentro del `onPress` de la alerta, el cupo se decrementa de forma reactiva en pantalla sin generar ningún error en consola ni romper la ejecución.
+____________________________________________________________________________________
+
+commit 7: detalles finales y retoques de diseno
+
+Oye, al abrir la pestaña de Reservas la aplicación se cierra sola y saca en pantalla un error que dice:
+`TypeError: Cannot read property 'titulo' of undefined`
+Además, en la pantalla principal de clases el buscador no permite escribir nada porque se había quedado recortado. ¿Por qué ocurre este error al renderizar las reservas y cómo dejamos el buscador y la lista funcionando al 100%?
+
+El problema se encuentra en dos archivos:
+
+1. Error de desestructuración en `src/screens/ReservasScreen.js`:
+En la línea 32 tenías declarado el renderizador de la lista así:
+```javascript
+// ❌ Error detectado:
+const renderItem = (item) => ( ... );
+```
+¿Por qué falla?: En React Native, el prop `renderItem` del componente `FlatList` entrega a la función un objeto contenedor con los metadatos de la iteración: `{ item, index, separators }`. Al declarar `(item)`, estás nombrando la variable completa con ese objeto contenedor, por lo que dentro de la función `item.titulo` es equivalente a `objetoEnvoltorio.titulo` (que es `undefined`).
+
+¿Cómo corregirlo?: Debes usar desestructuración con llaves `{ item }` para extraer directamente el objeto de la reserva:
+```javascript
+// ✅ Corrección:
+const renderItem = ({ item }) => ( ... );
+```
+
+2. Restauración del buscador en `src/screens/ClasesScreen.js`:
+En la cabecera de la pantalla principal, el contenedor `style.buscador` debe albergar el `<TextInput>` enlazado a los estados `busqueda` y `setBusqueda`, con su icono de búsqueda (`search`) y el botón para limpiar el texto (`close-circle`) cuando haya texto ingresado.
+
+Con estos dos ajustes:
+- La lista de reservas renderiza correctamente los títulos, profesores y chips de nivel sin crashear.
+- El catálogo de clases permite buscar en tiempo real por nombre de clase, profesor o filtrar por nivel.
+
 

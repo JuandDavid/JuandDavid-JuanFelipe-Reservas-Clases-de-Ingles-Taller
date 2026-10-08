@@ -29,7 +29,7 @@ export default function ReservasScreen() {
     );
   };
 
-  const renderItem = (item) => (
+  const renderItem = ({ item }) => (
     <View style={[estilos.tarjeta, sombra]}>
       <View style={estilos.encabezado}>
         <Text style={estilos.titulo} numberOfLines={2}>
