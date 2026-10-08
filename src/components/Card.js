@@ -15,7 +15,11 @@ export default function Card({ clase, onPress }) {
             ]}
             onPress={onPress}
         >
-            <Image source={clase.imagen} />
+            <Image
+                source={{ uri: clase.imagen }}
+                style={estilos.imagen}
+                resizeMode="cover"
+            />
             <View style={estilos.cuerpo}>
                 <View style={{ alignSelf: 'flex-start' }}>
                     <LabelLevel level={clase.nivel} />

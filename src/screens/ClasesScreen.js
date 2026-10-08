@@ -31,37 +31,17 @@ export default function ClasesScreen({navigation}) {
 
     return(
         <View style={[style.pantalla, { paddingTop: insets.top + spacing.md }]}>            
-            <View style={{ paddingHorizontal }}>
-                <Text style={typography.titulo}>
-                    Reserva Clases de Inglés
-                </Text>
-                <View style={style.buscador}>
-                    <Ionicons name="search" size={18} color={colors.textoSuave} />
-                    <TextInput
-                        style={style.input}
-                        placeholder="Buscar por nivel"
-                        value={busqueda}
-                        onChangeText={setBusqueda}
-                        autoCorrect={false}
-                    />                
-                    {
-                        busqueda.length > 0 && (
-                            <Ionicons
-                                name="close-circle"
-                                size={18}
-                                color={colors.textoSuave}
-                                onPress={() => setBusqueda('')}
-                            />
-                        )
-                    }
-                </View>
-            </View>
-            <ScrollView
-                style={{ flexGrow: 0, marginVertical: spacing.md }}
-                contentContainerStyle={{ paddingHorizontal, paddingVertical: 2 }}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-            >
+    <View style={{ paddingHorizontal }}>
+        <Text style={typography.titulo}>Reserva Clases de Inglés</Text>
+        <View style={style.buscador}> ... </View>
+    </View>
+    <ScrollView
+        style={{ flexGrow: 0, marginVertical: spacing.md }}
+        contentContainerStyle={{ paddingHorizontal, paddingVertical: 2 }}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+    >
+
                 {
                     NIVELES.map((item) => (
                         <LevelChip
