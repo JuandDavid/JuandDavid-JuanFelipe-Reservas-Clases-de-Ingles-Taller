@@ -51,12 +51,10 @@ export function ReservasProvider({ children }) {
             return [nueva, ...previas];
         });
         return resultado;
-    }, []);
-
+    },[]);
     const eliminarReserva = useCallback((id) => {
         setReservas((previas) => previas.filter((r) => r.id !== id));
     }, []);
-
     const valor = useMemo(
         () => ({
             cargando,
@@ -66,6 +64,6 @@ export function ReservasProvider({ children }) {
         }),
         [cargando, reservas, agregarReserva, eliminarReserva]
     );
-
-    return <ReservasContext.Provider>{children}</ReservasContext.Provider>;
+    return <ReservasContext.Provider value={valor}>{children}</ReservasContext.Provider>;
 }
+

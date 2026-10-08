@@ -29,8 +29,9 @@ export default function useAlmacenamiento(key, valorInicial) {
         },
         [key]
     );
-
+    
     // Olvido de retornar el estado y la funcion
+    return [valor, actualizar, listo];
 }
 
 // Alias para compatibilidad con el ejemplo de la profesora (useAsyncStorage)
