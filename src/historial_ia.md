@@ -343,7 +343,7 @@ ________________________________________________________________________________
 
 commit 3: pantalla de reservas
 
-En ReservasScreen.js estoy tratando de mostrar los detalles de cada reserva para que el estudiante tenga toda la información necesaria en un solo lugar
+En ReservasScreen.js estoy tratando de mostrar los detalles de cada reserva para que el estudiante tenga toda la información necesaria en un solo lugar.
 
 Para lograr que el estudiante vea toda la información de su reserva completa y clara, hay un error crítico en el código actual que impide que se muestren los datos, y luego una serie de mejoras para enriquecer la tarjeta.
 
@@ -666,4 +666,6 @@ reservas.push(nueva);
 Resumen del flujo sincronizado
 
 Siguiendo estos pasos, en cuanto el usuario presione "Confirmar reserva" en el detalle de una clase y navegue a la pestaña de reservas, la nueva clase ya estará pintada en la lista en tiempo real.
+__________________________________________________________________
+commit 4 : pantalla perfil de estudiante
 

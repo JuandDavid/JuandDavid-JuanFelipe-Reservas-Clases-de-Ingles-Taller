@@ -77,8 +77,7 @@ export default function PerfilScreen() {
     };
 
     try {
-      // Error de novato: guardar el objeto directo sin JSON.stringify
-      await AsyncStorage.setItem(STORAGE_KEYS.PERFIL, perfil);
+      await saveData(STORAGE_KEYS.PERFIL, perfil);
       setGuardado(true);
       setEditando(false);
       Alert.alert('¡Éxito!', 'Tus datos de estudiante han sido guardados.');
