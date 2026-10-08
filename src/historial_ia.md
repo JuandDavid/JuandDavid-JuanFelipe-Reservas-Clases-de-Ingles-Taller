@@ -38,7 +38,7 @@ Esta es la causa más común.
 Si en tu función agregarReserva estás usando la variable reservas directamente de esta forma:
 
 javascript
-// ❌ ERROR COMÚN:
+// [ERROR]: ERROR COMÚN:
 const agregarReserva = useCallback((clase, horario) => {
     const nueva = { ... };
     setReservas([nueva, ...reservas]); // <-- Usa 'reservas' del scope
@@ -88,7 +88,7 @@ setReservas((previas) => [nueva, ...previas]);
 Revisa que en ningún punto se esté pasando únicamente el nuevo elemento al estado:
 
 javascript
-// ❌ Reemplaza todo el arreglo por un solo elemento
+// [ERROR]: Reemplaza todo el arreglo por un solo elemento
 setReservas([nueva]);
 //  Conserva los anteriores y agrega el nuevo al inicio
 setReservas((previas) => [nueva, ...previas]);
@@ -97,7 +97,7 @@ setReservas((previas) => [nueva, ...previas]);
 Si se muta el arreglo existente en lugar de crear una nueva referencia:
 
 javascript
-// ❌ Mutación directa (React no detecta el cambio de referencia):
+// [ERROR]: Mutación directa (React no detecta el cambio de referencia):
 setReservas((previas) => {
     previas.push(nueva);
     return previas;
@@ -167,13 +167,13 @@ Debes volver a importar y renderizar AppTabs:
 
 1. En la importación (línea 5):
 javascript
-// ❌ Antes:
+// [ERROR]: Antes:
 import ClasesStack from './src/navigation/ClasesStack';
 //  Después:
 import AppTabs from './src/navigation/AppTabs';
 2. En el componente App (línea 27):
 jsx
-// ❌ Antes:
+// [ERROR]: Antes:
 <SafeAreaProvider>
   <ReservasProvider>
     <NavigationContainer theme={temaNavegacion}>
@@ -196,7 +196,7 @@ Detalle adicional a revisar en AppTabs.js
 Una vez restaures AppTabs, revisa la línea 49 de src/navigation/AppTabs.js:
 
 jsx
-// ❌ Incorrecto: pasar un elemento JSX hace que React Navigation desmonte y remonte el stack en cada render
+// [ERROR]: Incorrecto: pasar un elemento JSX hace que React Navigation desmonte y remonte el stack en cada render
 <Tab.Screen
   name="ClasesTab"
   component={<ClasesStack />}
@@ -352,7 +352,7 @@ Para lograr que el estudiante vea toda la información de su reserva completa y 
 En la línea 32 de src/screens/ReservasScreen.js:
 
 javascript
-// ❌ Error: recibe el objeto envoltorio { item, index }
+// [ERROR]: Error: recibe el objeto envoltorio { item, index }
 const renderItem = (item) => (
 
 En React Native, el método renderItem de una FlatList no pasa el elemento directamente, sino un objeto { item, index, separators }. Al declarar (item), estás accediendo a item.titulo, item.horario, etc., los cuales resultan en undefined y dejan la tarjeta en blanco o sin datos.
@@ -419,7 +419,7 @@ export default function ReservasScreen() {
       ]
     );
   };
-  // ✅ 1. Desestructuración corregida ({ item })
+  // [CORRECTO]: 1. Desestructuración corregida ({ item })
   const renderItem = ({ item }) => {
     // Formatear fecha de reserva amigable
     const fechaReserva = item.createdAt 
@@ -571,8 +571,8 @@ const nueva = {
     profesor: clase.profesor.nombre,
     precio: clase.precio,
     horario,
-    modalidad: clase.modalidad,   // 💡 Añadir modalidad
-    duracion: clase.duracion,     // 💡 Añadir duración
+    modalidad: clase.modalidad,   // [NOTA]: Añadir modalidad
+    duracion: clase.duracion,     // [NOTA]: Añadir duración
     createdAt: new Date().toISOString(),
 };
 ______________________________________________________________________________________________________________________________________
@@ -588,7 +588,7 @@ Para garantizar que esta sincronización nunca falle ni se desincronice, valida 
 Este es el error más común que rompe la sincronización. Si haces esto en ReservasScreen.js:
 
 javascript
-// ❌ Error: copia en estado local
+// [ERROR]: Error: copia en estado local
 const { reservas } = useReserva();
 const [misReservas, setMisReservas] = useState(reservas); // Se queda congelado con el valor inicial
 
@@ -661,7 +661,7 @@ javascript
 setReservas((previas) => [nueva, ...previas]);
 //  Correcto al eliminar:
 setReservas((previas) => previas.filter((r) => r.id !== id));
-// ❌ Incorrecto (mutación directa, React no detectará cambios entre pantallas):
+// [ERROR]: Incorrecto (mutación directa, React no detectará cambios entre pantallas):
 reservas.push(nueva);
 Resumen del flujo sincronizado
 
@@ -713,7 +713,7 @@ Esta función ya se encarga de convertir el objeto a texto con JSON.stringify in
 
 En src/screens/PerfilScreen.js:
 javascript
-// ❌ Antes:
+// [ERROR]: Antes:
 await AsyncStorage.setItem(STORAGE_KEYS.PERFIL, perfil);
 //  Después:
 await saveData(STORAGE_KEYS.PERFIL, perfil);
@@ -791,7 +791,7 @@ jsx
           estilos.chipNivel,
           seleccionado && estilos.chipNivelSeleccionado, // Resalta el nivel elegido
         ]}
-        onPress={() => setNivelIngles(item)} // ✅ Actualiza el estado con el nivel pulsado
+        onPress={() => setNivelIngles(item)} // [CORRECTO]: Actualiza el estado con el nivel pulsado
       >
         <Text
           style={[
@@ -814,7 +814,7 @@ javascript
 const perfil = {
   nombre: nombre.trim(),
   apellido: apellido.trim(),
-  nivelIngles, // ✅ Se incluye junto a los demás datos
+  nivelIngles, // [CORRECTO]: Se incluye junto a los demás datos
   telefono: telefono.trim(),
   documento: documento.trim(),
   actualizadoEn: new Date().toISOString(),
@@ -826,7 +826,7 @@ Para que el nivel y los datos se graben físicamente en el dispositivo:
 javascript
 // Líneas 79-88 de PerfilScreen.js
 try {
-  // ✅ Usar saveData para serializar automáticamente a JSON y guardar en AsyncStorage
+  // [CORRECTO]: Usar saveData para serializar automáticamente a JSON y guardar en AsyncStorage
   await saveData(STORAGE_KEYS.PERFIL, perfil);
   setGuardado(true);
   setEditando(false);
@@ -847,7 +847,7 @@ useEffect(() => {
       if (perfil) {
         setNombre(perfil.nombre || '');
         setApellido(perfil.apellido || '');
-        // ✅ Restaura el nivel guardado; si no existiera, usa 'Basico' como respaldo
+        // [CORRECTO]: Restaura el nivel guardado; si no existiera, usa 'Basico' como respaldo
         setNivelIngles(perfil.nivelIngles || 'Basico');
         setTelefono(perfil.telefono || '');
         setDocumento(perfil.documento || '');
@@ -883,7 +883,7 @@ He revisado src/screens/PerfilScreen.js y ya he aplicado la corrección.
 En la línea 80, dentro de guardarPerfil:
 
 javascript
-// ❌ Antes:
+// [ERROR]: Antes:
 await AsyncStorage.setItem(STORAGE_KEYS.PERFIL, perfil);
 
 Tenía dos problemas que provocaban que saltara inmediatamente al bloque catch mostrando la alerta "No se pudo guardar la información del perfil":
@@ -923,12 +923,12 @@ El problema se divide en dos partes:
 1. Error en la prop `component` en `src/navigation/AppTabs.js`:
 En React Navigation (tanto en Stack como en BottomTabs), la propiedad `component` espera la referencia a la función del componente, NO un elemento JSX ya instanciado.
 
-❌ Incorrecto:
+[ERROR]: Incorrecto:
 ```jsx
 <Tab.Screen name="ClasesTab" component={<ClasesStack />} />
 ```
 
-✅ Correcto:
+[CORRECTO]: Correcto:
 ```jsx
 <Tab.Screen name="ClasesTab" component={ClasesStack} />
 ```
@@ -961,7 +961,7 @@ Oye, estuve probando el botón de reservar en DetalleClaseScreen.js. Al presiona
 
 El error ocurre exactamente en la línea 51 de DetalleClaseScreen.js:
 ```javascript
-// ❌ Error detectado:
+// [ERROR]: Error detectado:
 cuposDisponibles = cuposDisponibles - 1;
 ```
 
@@ -975,7 +975,7 @@ cuposDisponibles = cuposDisponibles - 1;
 Debes utilizar la función `setCuposDisponibles` que te entrega el hook `useState`. Como el nuevo valor depende del valor anterior que tiene el estado, la mejor práctica en React es usar la forma funcional:
 
 ```javascript
-// ✅ Corrección recomendada:
+// [CORRECTO]: Corrección recomendada:
 setCuposDisponibles((actuales) => Math.max(0, actuales - 1));
 ```
 
@@ -997,14 +997,14 @@ El problema se encuentra en dos archivos:
 1. Error de desestructuración en `src/screens/ReservasScreen.js`:
 En la línea 32 tenías declarado el renderizador de la lista así:
 ```javascript
-// ❌ Error detectado:
+// [ERROR]: Error detectado:
 const renderItem = (item) => ( ... );
 ```
 ¿Por qué falla?: En React Native, el prop `renderItem` del componente `FlatList` entrega a la función un objeto contenedor con los metadatos de la iteración: `{ item, index, separators }`. Al declarar `(item)`, estás nombrando la variable completa con ese objeto contenedor, por lo que dentro de la función `item.titulo` es equivalente a `objetoEnvoltorio.titulo` (que es `undefined`).
 
 ¿Cómo corregirlo?: Debes usar desestructuración con llaves `{ item }` para extraer directamente el objeto de la reserva:
 ```javascript
-// ✅ Corrección:
+// [CORRECTO]: Corrección:
 const renderItem = ({ item }) => ( ... );
 ```
 

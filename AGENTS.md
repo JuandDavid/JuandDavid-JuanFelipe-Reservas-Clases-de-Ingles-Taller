@@ -1,4 +1,4 @@
-# 🤖 AGENTS.md — Protocolo de Colaboración con IA y Bitácora de Aprendizaje
+# AGENTS.md — Protocolo de Colaboración con IA y Bitácora de Aprendizaje
 
 **Curso:** Construcción de Software V — Desarrollo Móvil  
 **Proyecto:** App Móvil de Reserva de Clases de Inglés y Perfil de Estudiantes  
@@ -6,27 +6,27 @@
 
 ---
 
-## 📌 1. Propósito y Filosofía de Asistencia
+## 1. Propósito y Filosofía de Asistencia
 
 Este documento define el rol, las restricciones éticas y los lineamientos de interacción de la Inteligencia Artificial (IA) en el desarrollo de este proyecto universitario. La herramienta de IA se utiliza bajo el modelo de **Tutor Técnico / Par Observador**, garantizando que el estudiante mantenga el control intelectual, la autoría y la comprensión de cada línea de código.
 
 ---
 
-## ⚖️ 2. Las 3 Reglas Obligatorias de Asistencia de IA
+## 2. Las 3 Reglas Obligatorias de Asistencia de IA
 
-### 🚫 Regla 1: Prohibida la Generación Total de Código
+### Regla 1: Prohibida la Generación Total de Código
 * La IA **NO** debe generar pantallas, componentes o módulos completos de principio a fin.
 * No se admiten bloques de código masivos sin justificación.
 * El estudiante debe redactar e integrar el código manualmente, aprendiendo la sintaxis y los patrones de React Native.
 
-### 🔍 Regla 2: Rol de Observador, Analista de Código y Guía
+### Regla 2: Rol de Observador, Analista de Código y Guía
 * La IA actúa como un **depurador y analista arquitectónico**.
 * Cuando el estudiante encuentra un bug, pantalla en blanco o error de compilación:
   1. La IA explica el **origen conceptual del error** (por qué falla en React / Metro).
   2. Proporciona una **guía de pasos conceptuales** y pistas para que el estudiante aplique la corrección.
   3. Sugiere buenas prácticas de optimización acordes al nivel de la materia.
 
-### 📋 Regla 3: Tablero de Contexto y Registro de Consultas (AI Board)
+### Regla 3: Tablero de Contexto y Registro de Consultas (AI Board)
 * Toda interacción significativa entre el estudiante y la IA debe quedar documentada en el **Tablero de Colaboración** inferior, especificando:
   * El problema o error detectado por el estudiante.
   * El componente afectado.
@@ -35,7 +35,7 @@ Este documento define el rol, las restricciones éticas y los lineamientos de in
 
 ---
 
-## 📊 3. Tablero de Consultas, Contexto y Progreso (AI Collaboration Board)
+## 3. Tablero de Consultas, Contexto y Progreso (AI Collaboration Board)
 
 | # | Fase / Commit | Problema / Error de Aprendiz | Componente | Causa Identificada y Pista de la IA | Solución Aplicada por el Estudiante |
 |---|---|---|---|---|---|
@@ -49,7 +49,7 @@ Este documento define el rol, las restricciones éticas y los lineamientos de in
 
 ---
 
-## 🛠️ 4. Guía de Ejecución y Pruebas
+## 4. Guía de Ejecución y Pruebas
 1. Instalar dependencias exactas con Expo:
    ```bash
    npx expo install
@@ -62,4 +62,3 @@ Este documento define el rol, las restricciones éticas y los lineamientos de in
    ```bash
    npx expo-doctor
    ```
-
