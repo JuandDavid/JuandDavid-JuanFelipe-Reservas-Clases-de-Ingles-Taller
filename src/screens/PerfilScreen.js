@@ -135,7 +135,7 @@ export default function PerfilScreen() {
             </Text>
           </View>
 
-          {/* MODO VISUALIZACIÓN: Tarjeta del estudiante */}
+          {/* Modo Visualización: Tarjeta del estudiante */}
           {guardado && !editando ? (
             <View style={[estilos.tarjetaCredencial, sombra]}>
               <View style={estilos.filaAvatar}>

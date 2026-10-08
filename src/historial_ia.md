@@ -669,3 +669,249 @@ Siguiendo estos pasos, en cuanto el usuario presione "Confirmar reserva" en el d
 __________________________________________________________________
 commit 4 : pantalla perfil de estudiante
 
+En PerfilScreen.js explicame como puedo hacer para guardar la información del estudiante y no tenga que volver a ingresarla cada vez que abre la aplicación
+
+Para que la información del estudiante persista y se cargue automáticamente cada vez que se abre la aplicación, se requiere un ciclo de persistencia con almacenamiento local (AsyncStorage).
+
+En tu código de PerfilScreen.js ya tienes casi todo preparado, pero hay un error específico en la función guardarPerfil que impide que los datos se guarden en el disco del teléfono.
+
+1. ¿Cuál es el error actual en PerfilScreen.js?
+
+En la función guardarPerfil (líneas 80-81) tienes:
+
+javascript
+try {
+  // Error de novato: guardar el objeto directo sin JSON.stringify
+  await AsyncStorage.setItem(STORAGE_KEYS.PERFIL, perfil);
+  setGuardado(true);
+  ...
+} catch (error) {
+  Alert.alert('Error', 'No se pudo guardar la información del perfil.');
+}
+
+Este código falla por dos motivos:
+
+
+  
+AsyncStorage no está importado: En las importaciones del archivo no existe AsyncStorage, lo que lanza un error de variable no definida (ReferenceError) y salta directo al catch.
+
+  
+AsyncStorage solo almacena strings: perfil es un objeto JavaScript ({ nombre, apellido, ... }). AsyncStorage.setItem no puede guardar objetos directamente; requiere serializarlos con JSON.stringify().
+
+  
+
+Al fallar la escritura en disco, los datos se quedan solo en la memoria RAM temporal. Cuando cierras o recargas la app, esa memoria se borra.
+
+2. ¿Cómo corregirlo usando tu servicio saveData?
+
+En la línea 21 de PerfilScreen.js ya tienes importada la función auxiliar saveData desde ../services/storage:
+
+javascript
+import { getData, saveData, removeData } from '../services/storage';
+
+Esta función ya se encarga de convertir el objeto a texto con JSON.stringify internamente. Solo debes reemplazar la línea 81:
+
+En src/screens/PerfilScreen.js:
+javascript
+// ❌ Antes:
+await AsyncStorage.setItem(STORAGE_KEYS.PERFIL, perfil);
+//  Después:
+await saveData(STORAGE_KEYS.PERFIL, perfil);
+3. ¿Cómo funciona el ciclo completo de persistencia?
+
+Para que no tengas que volver a ingresar los datos, el flujo funciona en dos momentos clave:
+
+A. Al abrir la app (Lectura automática):
+
+Tu useEffect (líneas 40-62) ya está bien implementado:
+
+javascript
+useEffect(() => {
+  const cargarPerfil = async () => {
+    try {
+      // 1. Lee del almacenamiento local
+      const perfil = await getData(STORAGE_KEYS.PERFIL);
+      
+      // 2. Si existen datos guardados, restaura los estados y muestra la tarjeta
+      if (perfil) {
+        setNombre(perfil.nombre || '');
+        setApellido(perfil.apellido || '');
+        setNivelIngles(perfil.nivelIngles || 'Basico');
+        setTelefono(perfil.telefono || '');
+        setDocumento(perfil.documento || '');
+        setGuardado(true);
+        setEditando(false);
+      } else {
+        // 3. Si no hay datos, abre el formulario para escribir
+        setEditando(true);
+      }
+    } catch (error) {
+      console.log('Error cargando perfil:', error);
+    } finally {
+      setCargando(false);
+    }
+  };
+  cargarPerfil();
+}, []);
+B. Al presionar "Guardar" (Escritura en disco):
+
+Al usar await saveData(STORAGE_KEYS.PERFIL, perfil);:
+
+
+  
+El objeto se convierte en texto plano JSON y se almacena en el dispositivo físico bajo la clave @perfil_estudiante.
+
+  
+Al reiniciar Expo o cerrar la aplicación, getData encontrará ese registro y llenará los campos automáticamente.
+____________________________________________________________________________________
+
+Indicame como guardar el nivel que seleccione el estudiante junto con el resto de sus datos sin que se pierda la información
+
+Para guardar el nivel de inglés seleccionado junto con los demás datos y garantizar que no se pierda al cerrar la app, el flujo requiere conectar 4 pasos esenciales dentro de src/screens/PerfilScreen.js:
+
+1. Capturar la selección en el estado local (useState)
+
+Primero, asegúrate de tener un estado para almacenar el nivel actual (con un valor por defecto seguro como 'Basico'):
+
+javascript
+// Línea 32 de PerfilScreen.js
+const [nivelIngles, setNivelIngles] = useState('Basico');
+
+En el formulario, los botones o chips de nivel deben actualizar dicho estado cada vez que el estudiante toque una opción:
+
+jsx
+// Líneas 277-300 de PerfilScreen.js
+<View style={estilos.filaNiveles}>
+  {NIVELES_DISPONIBLES.map((item) => {
+    const seleccionado = nivelIngles === item;
+    return (
+      <TouchableOpacity
+        key={item}
+        style={[
+          estilos.chipNivel,
+          seleccionado && estilos.chipNivelSeleccionado, // Resalta el nivel elegido
+        ]}
+        onPress={() => setNivelIngles(item)} // ✅ Actualiza el estado con el nivel pulsado
+      >
+        <Text
+          style={[
+            estilos.textoChipNivel,
+            seleccionado && estilos.textoChipSeleccionado,
+          ]}
+        >
+          {item}
+        </Text>
+      </TouchableOpacity>
+    );
+  })}
+</View>
+2. Empaquetar nivelIngles en el objeto del perfil
+
+Cuando el estudiante presiona "Guardar Información", la función guardarPerfil debe incluir la propiedad nivelIngles dentro del objeto único que se enviará al almacenamiento:
+
+javascript
+// Líneas 70-77 de PerfilScreen.js
+const perfil = {
+  nombre: nombre.trim(),
+  apellido: apellido.trim(),
+  nivelIngles, // ✅ Se incluye junto a los demás datos
+  telefono: telefono.trim(),
+  documento: documento.trim(),
+  actualizadoEn: new Date().toISOString(),
+};
+3. Guardar el objeto en almacenamiento persistente con saveData
+
+Para que el nivel y los datos se graben físicamente en el dispositivo:
+
+javascript
+// Líneas 79-88 de PerfilScreen.js
+try {
+  // ✅ Usar saveData para serializar automáticamente a JSON y guardar en AsyncStorage
+  await saveData(STORAGE_KEYS.PERFIL, perfil);
+  setGuardado(true);
+  setEditando(false);
+  Alert.alert('¡Éxito!', 'Tus datos de estudiante han sido guardados.');
+} catch (error) {
+  Alert.alert('Error', 'No se pudo guardar la información del perfil.');
+}
+4. Recuperar y restaurar el nivel al reabrir la app (useEffect)
+
+Cuando el estudiante vuelve a abrir la pantalla, el useEffect inicial lee el perfil guardado con getData y restaura el estado de nivelIngles:
+
+javascript
+// Líneas 40-52 de PerfilScreen.js
+useEffect(() => {
+  const cargarPerfil = async () => {
+    try {
+      const perfil = await getData(STORAGE_KEYS.PERFIL);
+      if (perfil) {
+        setNombre(perfil.nombre || '');
+        setApellido(perfil.apellido || '');
+        // ✅ Restaura el nivel guardado; si no existiera, usa 'Basico' como respaldo
+        setNivelIngles(perfil.nivelIngles || 'Basico');
+        setTelefono(perfil.telefono || '');
+        setDocumento(perfil.documento || '');
+        setGuardado(true);
+        setEditando(false);
+      }
+    } catch (error) {
+      console.log('Error cargando perfil:', error);
+    } finally {
+      setCargando(false);
+    }
+  };
+  cargarPerfil();
+}, []);
+5. Visualizar el nivel en la credencial del estudiante
+
+Una vez guardado, en la tarjeta de presentación se muestra el nivel recuperado usando el componente LabelLevel:
+
+jsx
+// Línea 150 de PerfilScreen.js
+<View style={estilos.contenedorNivel}>
+  <LabelLevel level={nivelIngles} />
+</View>
+
+Con este flujo unificado, cada vez que el estudiante cambie de nivel y guarde, su nuevo nivel quedará grabado en disco y se mantendrá intacto al reiniciar la aplicación.
+
+revisa porfavor la clase PerfilScreen.js y ayudame a corregir el error
+
+He revisado src/screens/PerfilScreen.js y ya he aplicado la corrección.
+
+¿Cuál era el error?
+
+En la línea 80, dentro de guardarPerfil:
+
+javascript
+// ❌ Antes:
+await AsyncStorage.setItem(STORAGE_KEYS.PERFIL, perfil);
+
+Tenía dos problemas que provocaban que saltara inmediatamente al bloque catch mostrando la alerta "No se pudo guardar la información del perfil":
+
+
+  
+AsyncStorage no estaba importado en el archivo, lo que generaba un ReferenceError.
+
+  
+AsyncStorage.setItem solo acepta texto (string), por lo que pasarle el objeto perfil directamente sin serializar no es compatible.
+
+  
+Corrección aplicada
+
+Se reemplazó la llamada directa por la función auxiliar saveData (que ya tienes importada en la línea 21 y que internamente ejecuta JSON.stringify):
+
+javascript
+//  Ahora (línea 80):
+await saveData(STORAGE_KEYS.PERFIL, perfil);
+
+Con este cambio:
+
+
+  
+La información del estudiante (nombre, apellido, documento, teléfono y nivel seleccionado) se guarda correctamente en el almacenamiento del dispositivo.
+
+  
+Al recargar o reiniciar la aplicación, la función cargarPerfil() en el useEffect recuperará los datos y los mostrará en la credencial sin necesidad de volver a ingresarlos.
+____________________________________________________________________________________
+
+commit 5: 
