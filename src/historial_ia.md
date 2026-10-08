@@ -950,4 +950,38 @@ import AppTabs from './src/navigation/AppTabs';
 </NavigationContainer>
 ```
 
-Con estos dos cambios, el Stack de clases queda anidado dentro de la primera pestaña ('ClasesTab'), permitiendo navegar de la lista al detalle de la clase y al mismo tiempo tener acceso a las pestañas de 'Reservas' y 'Perfil' desde la barra inferior.
+Con estos dos cambios, el Stack de clases queda anidado dentro de la primera pestaña ('ClasesTab'), permitiendo navegar de la lista al detalle de la clase y al mismo tiempo tener acceso a las pestañas de 'Reservas' y 'Perfil' desde la barra inferior.
+____________________________________________________________________________________
+
+commit 6: flujo de reserva con horario
+
+Oye, estuve probando el botón de reservar en DetalleClaseScreen.js. Al presionar 'Confirmar' en la alerta me saltó una pantalla roja con el siguiente error:
+`TypeError: Assignment to constant variable`
+¿Por qué pasa esto si solo quería restarle 1 al número de cupos que quedan disponibles? ¿Cómo se debe actualizar correctamente ese valor en React?
+
+El error ocurre exactamente en la línea 51 de DetalleClaseScreen.js:
+```javascript
+// ❌ Error detectado:
+cuposDisponibles = cuposDisponibles - 1;
+```
+
+¿Por qué ocurre este error?
+1. En la línea 20 declaraste el estado de los cupos así:
+   `const [cuposDisponibles, setCuposDisponibles] = useState(clase.cupos);`
+2. En JavaScript, una variable declarada con `const` no puede reasignarse mediante el operador de asignación directa `=`. Hacerlo dispara inmediatamente el error de tipo `TypeError: Assignment to constant variable`.
+3. Además, en la arquitectura de React, los estados nunca se deben mutar o reasignar directamente, ya que React necesita que se llame a la función despachadora (`setCuposDisponibles`) para programar el re-renderizado del componente y actualizar la interfaz gráfica con el nuevo valor.
+
+¿Cómo corregirlo?
+Debes utilizar la función `setCuposDisponibles` que te entrega el hook `useState`. Como el nuevo valor depende del valor anterior que tiene el estado, la mejor práctica en React es usar la forma funcional:
+
+```javascript
+// ✅ Corrección recomendada:
+setCuposDisponibles((actuales) => Math.max(0, actuales - 1));
+```
+
+Explicación del paso:
+- `(actuales) => ...`: Recibe el valor más reciente del estado en memoria.
+- `Math.max(0, actuales - 1)`: Le resta 1 al cupo actual y con `Math.max(0, ...)` evitas que los cupos lleguen a números negativos si se presiona varias veces.
+
+Al aplicar esta corrección dentro del `onPress` de la alerta, el cupo se decrementa de forma reactiva en pantalla sin generar ningún error en consola ni romper la ejecución.
+

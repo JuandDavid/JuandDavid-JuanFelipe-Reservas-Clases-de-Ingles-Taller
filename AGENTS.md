@@ -62,3 +62,4 @@ Este documento define el rol, las restricciones éticas y los lineamientos de in
    ```bash
    npx expo-doctor
    ```
+

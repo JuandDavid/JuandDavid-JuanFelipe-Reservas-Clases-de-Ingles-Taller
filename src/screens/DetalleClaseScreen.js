@@ -47,8 +47,7 @@ export default function DetalleClase({ route, navigation }) {
                     onPress: () => {
                         const resultado = agregarReserva(clase, horarioSeleccionado);
                         if (resultado && resultado.ok) {
-                            // Error de novato: reasignar estado directamente
-                            cuposDisponibles = cuposDisponibles - 1;
+                            setCuposDisponibles((actuales) => Math.max(0, actuales - 1));
                             Alert.alert(
                                 '¡Reserva exitosa!',
                                 `Tu clase ha sido reservada para ${horarioSeleccionado}.`,
