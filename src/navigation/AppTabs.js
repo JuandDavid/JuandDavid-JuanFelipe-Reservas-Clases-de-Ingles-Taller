@@ -46,7 +46,7 @@ export default function AppTabs() {
     >
       <Tab.Screen
         name="ClasesTab"
-        component={<ClasesStack />}
+        component={ClasesStack}
         options={{
           tabBarLabel: 'Clases',
         }}

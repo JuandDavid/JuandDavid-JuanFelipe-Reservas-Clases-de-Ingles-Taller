@@ -914,4 +914,40 @@ La información del estudiante (nombre, apellido, documento, teléfono y nivel s
 Al recargar o reiniciar la aplicación, la función cargarPerfil() en el useEffect recuperará los datos y los mostrará en la credencial sin necesidad de volver a ingresarlos.
 ____________________________________________________________________________________
 
-commit 5: 
+commit 5: navegacion tipo tab
+
+En AppTabs.js intenté enlazar el stack de clases usando component={<ClasesStack />}, pero la app me arroja un error en pantalla sobre 'A navigator cannot have a component that is a React element', y además en App.js sigo viendo únicamente el catálogo y no me aparecen las pestañas abajo. ¿Cómo debo corregir ambos archivos?
+
+El problema se divide en dos partes:
+
+1. Error en la prop `component` en `src/navigation/AppTabs.js`:
+En React Navigation (tanto en Stack como en BottomTabs), la propiedad `component` espera la referencia a la función del componente, NO un elemento JSX ya instanciado.
+
+❌ Incorrecto:
+```jsx
+<Tab.Screen name="ClasesTab" component={<ClasesStack />} />
+```
+
+✅ Correcto:
+```jsx
+<Tab.Screen name="ClasesTab" component={ClasesStack} />
+```
+
+Al pasarle `<ClasesStack />`, React Navigation no puede inyectar adecuadamente las props de navegación (route, navigation) y genera conflicto de instanciación.
+
+2. Conexión en `App.js`:
+Actualmente tu `App.js` sigue renderizando `<ClasesStack />` directamente dentro de `<NavigationContainer>`. Para que la barra inferior de pestañas sea la navegación principal de la app, debes reemplazar `ClasesStack` por `AppTabs`:
+
+En App.js:
+```javascript
+// 1. Cambiar la importación:
+import AppTabs from './src/navigation/AppTabs';
+
+// 2. Renderizar AppTabs dentro de NavigationContainer:
+<NavigationContainer theme={temaNavegacion}>
+  <StatusBar style="dark" />
+  <AppTabs />
+</NavigationContainer>
+```
+
+Con estos dos cambios, el Stack de clases queda anidado dentro de la primera pestaña ('ClasesTab'), permitiendo navegar de la lista al detalle de la clase y al mismo tiempo tener acceso a las pestañas de 'Reservas' y 'Perfil' desde la barra inferior.
