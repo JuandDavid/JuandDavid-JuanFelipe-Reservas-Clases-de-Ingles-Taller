@@ -20,7 +20,9 @@ export default function LevelChip({label, active, onPress}) {
 
 const style = StyleSheet.create({
   chip: {
-    paddingVertical: spacing.sm,
+    height: 38,
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingHorizontal: spacing.lg,
     borderRadius: radius.full,
     backgroundColor: colors.superficie,

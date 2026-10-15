@@ -56,12 +56,12 @@ export default function ClasesScreen({navigation}) {
                     }
                 </View>
             </View>
-    <ScrollView
-        style={{ flexGrow: 0, marginVertical: spacing.md }}
-        contentContainerStyle={{ paddingHorizontal, paddingVertical: 2 }}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-    >
+            <ScrollView
+                style={{ flexGrow: 0, flexShrink: 0, height: 48, marginVertical: spacing.md }}
+                contentContainerStyle={{ paddingHorizontal, alignItems: 'center' }}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+            >
 
                 {
                     NIVELES.map((item) => (
